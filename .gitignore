@@ -1,0 +1,13 @@
+# PyCharm / IntelliJ
+.idea/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# OS
+.DS_Store
+
+# Android Studio / IntelliJ
+*.iml
