@@ -3,9 +3,9 @@ import json
 import shutil
 from collections import defaultdict
 
-IMAGE_DIR = "images"
-CLUSTER_PATH = "data/face_clusters.json"
-OUTPUT_DIR = "output"
+IMAGE_DIR = "../images"
+CLUSTER_PATH = "../data/face_clusters.json"
+OUTPUT_DIR = "../output"
 
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 

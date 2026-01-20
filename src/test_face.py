@@ -5,8 +5,8 @@ import numpy as np
 from insightface.app import FaceAnalysis
 from tqdm import tqdm
 
-IMAGE_DIR = "images"
-OUTPUT_DIR = "data"
+IMAGE_DIR = "../images"
+OUTPUT_DIR = "../data"
 
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 

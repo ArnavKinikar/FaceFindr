@@ -5,9 +5,9 @@ from sklearn.preprocessing import normalize
 from collections import defaultdict
 
 # Paths
-EMB_PATH = "data/face_embeddings.npy"
-META_PATH = "data/face_metadata.json"
-OUT_PATH = "data/face_clusters.json"
+EMB_PATH = "../data/face_embeddings.npy"
+META_PATH = "../data/face_metadata.json"
+OUT_PATH = "../data/face_clusters.json"
 
 # Load data
 embeddings = np.load(EMB_PATH)
