@@ -1,4 +1,3 @@
-import React from 'react';
 import { Paper, useTheme } from '@mui/material';
 import UploadDropZone from './UploadDropZone';
 

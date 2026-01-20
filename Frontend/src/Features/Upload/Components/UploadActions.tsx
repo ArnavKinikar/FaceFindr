@@ -1,4 +1,3 @@
-import React from 'react';
 import { Stack, Button, alpha, useTheme } from '@mui/material';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import CameraAltIcon from '@mui/icons-material/CameraAlt';
