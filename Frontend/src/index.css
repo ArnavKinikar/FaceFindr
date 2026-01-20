@@ -1,0 +1,6 @@
+/* Global styles if needed, otherwise rely on MUI CssBaseline */
+html,
+body,
+#root {
+  height: 100%;
+}
