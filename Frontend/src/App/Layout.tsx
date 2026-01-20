@@ -43,19 +43,21 @@ function Layout({ children }: LayoutProps) {
                             </Typography>
                         </RouterLink>
 
-                        <Stack direction="row" spacing={0.75} alignItems="center" sx={{ opacity: 0.3, cursor: 'not-allowed', userSelect: 'none' }}>
-                            <Typography variant="caption" sx={{ fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-                                Gallery
-                            </Typography>
-                            <LockIcon sx={{ fontSize: 14 }} />
-                        </Stack>
-
-                        <Stack direction="row" spacing={0.75} alignItems="center" sx={{ opacity: 0.3, cursor: 'not-allowed', userSelect: 'none' }}>
-                            <Typography variant="caption" sx={{ fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                        <RouterLink to="/upload" style={{ textDecoration: 'none' }}>
+                            <Typography
+                                variant="caption"
+                                sx={{
+                                    color: 'rgba(255,255,255,0.8)',
+                                    fontWeight: 500,
+                                    textTransform: 'uppercase',
+                                    letterSpacing: '0.1em',
+                                    '&:hover': { color: '#fff' },
+                                    transition: 'color 0.2s'
+                                }}
+                            >
                                 Upload
                             </Typography>
-                            <LockIcon sx={{ fontSize: 14 }} />
-                        </Stack>
+                        </RouterLink>
                     </Stack>
                 </Toolbar>
             </AppBar>
