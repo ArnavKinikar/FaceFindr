@@ -1,9 +1,30 @@
 import { Stack, Button, alpha, useTheme } from '@mui/material';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import CameraAltIcon from '@mui/icons-material/CameraAlt';
+import { useRef, type ChangeEvent, useState } from 'react';
+import CameraCaptureModal from './CameraCaptureModal';
 
-const UploadActions = () => {
+interface UploadActionsProps {
+    onFileSelect: (file: File) => void;
+}
+
+const UploadActions = ({ onFileSelect }: UploadActionsProps) => {
     const theme = useTheme();
+    const fileInputRef = useRef<HTMLInputElement>(null);
+    const [isCameraOpen, setIsCameraOpen] = useState(false);
+
+    const handlePickClick = () => {
+        fileInputRef.current?.click();
+    };
+
+    const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (file) {
+            onFileSelect(file);
+        }
+        // Reset input value to allow selecting the same file again if needed
+        event.target.value = '';
+    };
 
     return (
         <Stack
@@ -15,11 +36,19 @@ const UploadActions = () => {
                 mt: 1
             }}
         >
+            <input
+                type="file"
+                ref={fileInputRef}
+                style={{ display: 'none' }}
+                accept="image/jpeg,image/png,image/webp"
+                onChange={handleFileChange}
+            />
             <Button
                 variant="contained"
                 size="large"
                 startIcon={<UploadFileIcon />}
                 fullWidth
+                onClick={handlePickClick}
                 sx={{
                     height: 48,
                     fontSize: '1rem',
@@ -36,6 +65,7 @@ const UploadActions = () => {
                 size="large"
                 startIcon={<CameraAltIcon />}
                 fullWidth
+                onClick={() => setIsCameraOpen(true)}
                 sx={{
                     height: 48,
                     fontSize: '1rem',
@@ -52,6 +82,12 @@ const UploadActions = () => {
             >
                 Take Photo
             </Button>
+
+            <CameraCaptureModal
+                open={isCameraOpen}
+                onClose={() => setIsCameraOpen(false)}
+                onCapture={onFileSelect}
+            />
         </Stack>
     );
 };

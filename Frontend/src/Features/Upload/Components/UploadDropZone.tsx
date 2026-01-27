@@ -1,9 +1,23 @@
 import { Box, Typography, alpha, useTheme } from '@mui/material';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import UploadActions from './UploadActions';
+import { uploadFile } from '../../../Services/api';
+import { useState } from 'react';
 
 const UploadDropZone = () => {
     const theme = useTheme();
+    const [selectedFile, setSelectedFile] = useState<File | null>(null);
+
+    const handleFileSelect = async (file: File) => {
+        setSelectedFile(file);
+        console.log('Selected file:', file.name);
+        try {
+            const response = await uploadFile(file);
+            console.log('File upload successful:', response);
+        } catch (error) {
+            console.error('Upload failed:', error);
+        }
+    };
 
     return (
         <Box
@@ -41,14 +55,14 @@ const UploadDropZone = () => {
 
             <Box sx={{ textAlign: 'center', display: 'flex', flexDirection: 'column', gap: 1 }}>
                 <Typography variant="h5" sx={{ fontWeight: 700, letterSpacing: '-0.015em', color: 'text.primary' }}>
-                    Drag and drop your files here
+                    {selectedFile ? `Selected: ${selectedFile.name}` : "Drag and drop your files here"}
                 </Typography>
                 <Typography variant="body2" sx={{ color: 'text.secondary' }}>
                     Maximum file size: 10MB. Formats: JPG, PNG, WEBP
                 </Typography>
             </Box>
 
-            <UploadActions />
+            <UploadActions onFileSelect={handleFileSelect} />
         </Box>
     );
 };
