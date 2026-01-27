@@ -34,6 +34,11 @@ yarn-error.log*
 pnpm-debug.log*
 
 # =========================
+# Tool / Editor metadata
+# =========================
+metadata.json
+
+# =========================
 # OS
 # =========================
 .DS_Store
