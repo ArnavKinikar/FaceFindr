@@ -7,9 +7,18 @@ import { useState } from 'react';
 const UploadDropZone = () => {
     const theme = useTheme();
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
+    const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
     const handleFileSelect = async (file: File) => {
         setSelectedFile(file);
+
+        // Create preview URL
+        if (previewUrl) {
+            URL.revokeObjectURL(previewUrl);
+        }
+        const newPreviewUrl = URL.createObjectURL(file);
+        setPreviewUrl(newPreviewUrl);
+
         console.log('Selected file:', file.name);
         try {
             const response = await uploadFile(file);
@@ -39,28 +48,46 @@ const UploadDropZone = () => {
                 }
             }}
         >
-            <Box
-                sx={{
-                    width: 80,
-                    height: 80,
-                    borderRadius: '50%',
-                    bgcolor: alpha(theme.palette.primary.main, 0.1),
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center'
-                }}
-            >
-                <CloudUploadIcon sx={{ fontSize: 40, color: 'primary.main' }} />
-            </Box>
+            {previewUrl ? (
+                <Box
+                    component="img"
+                    src={previewUrl}
+                    alt="Selected file preview"
+                    sx={{
+                        width: 200,
+                        height: 200,
+                        objectFit: 'cover',
+                        borderRadius: 2,
+                        mb: 2,
+                        boxShadow: 3
+                    }}
+                />
+            ) : (
+                <>
+                    <Box
+                        sx={{
+                            width: 80,
+                            height: 80,
+                            borderRadius: '50%',
+                            bgcolor: alpha(theme.palette.primary.main, 0.1),
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center'
+                        }}
+                    >
+                        <CloudUploadIcon sx={{ fontSize: 40, color: 'primary.main' }} />
+                    </Box>
 
-            <Box sx={{ textAlign: 'center', display: 'flex', flexDirection: 'column', gap: 1 }}>
-                <Typography variant="h5" sx={{ fontWeight: 700, letterSpacing: '-0.015em', color: 'text.primary' }}>
-                    {selectedFile ? `Selected: ${selectedFile.name}` : "Drag and drop your files here"}
-                </Typography>
-                <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                    Maximum file size: 10MB. Formats: JPG, PNG, WEBP
-                </Typography>
-            </Box>
+                    <Box sx={{ textAlign: 'center', display: 'flex', flexDirection: 'column', gap: 1 }}>
+                        <Typography variant="h5" sx={{ fontWeight: 700, letterSpacing: '-0.015em', color: 'text.primary' }}>
+                            {selectedFile ? `Selected: ${selectedFile.name}` : "Drag and drop your files here"}
+                        </Typography>
+                        <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                            Maximum file size: 10MB. Formats: JPG, PNG, WEBP
+                        </Typography>
+                    </Box>
+                </>
+            )}
 
             <UploadActions onFileSelect={handleFileSelect} />
         </Box>
