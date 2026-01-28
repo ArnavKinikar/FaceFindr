@@ -66,7 +66,7 @@ function Layout({ children }: LayoutProps) {
                 {children}
             </Box>
 
-            <Box
+            {/* <Box
                 component="footer"
                 sx={{
                     position: 'fixed',
@@ -90,7 +90,7 @@ function Layout({ children }: LayoutProps) {
                         </Typography>
                     </Stack>
                 </Stack>
-            </Box>
+            </Box> */}
         </Box>
     );
 }
