@@ -20,17 +20,25 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Resolve paths relative to the project root
+# current: .../Backend/app/main.py
+# project_root: .../
+current_dir = os.path.dirname(os.path.abspath(__file__))
+backend_dir = os.path.dirname(current_dir)
+project_root = os.path.dirname(backend_dir)
+
+images_dir = os.path.join(project_root, "images")
+data_dir = os.path.join(project_root, "data")
+
 # Initialize Matcher
-# Using relative path assuming run context is project root or setting explicit paths
-matcher = FaceMatcher(data_dir="data", images_dir="images")
+matcher = FaceMatcher(data_dir=data_dir, images_dir=images_dir)
 
 # Mount Static Files
 # Serve core images directory
-# Ensure 'images' directory exists
-if not os.path.exists("images"):
-    print("Warning: 'images' directory not found.")
+if not os.path.exists(images_dir):
+    print(f"Warning: 'images' directory not found at {images_dir}")
 else:
-    app.mount("/images", StaticFiles(directory="images"), name="images")
+    app.mount("/images", StaticFiles(directory=images_dir), name="images")
 
 @app.get("/")
 def read_root():
