@@ -3,9 +3,11 @@ import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import UploadActions from './UploadActions';
 import { uploadFile } from '../../../Services/api';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const UploadDropZone = () => {
     const theme = useTheme();
+    const navigate = useNavigate();
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
     const [isUploading, setIsUploading] = useState(false);
@@ -33,15 +35,14 @@ const UploadDropZone = () => {
         try {
             const response = await uploadFile(selectedFile);
             console.log('File upload successful:', response);
-            // Optionally clear the selection or show a success message here
-            // setSelectedFile(null); 
-            // setPreviewUrl(null);
+            navigate('/gallery');
         } catch (error) {
             console.error('Upload failed:', error);
         } finally {
             setIsUploading(false);
         }
     };
+
 
     return (
         <Box
