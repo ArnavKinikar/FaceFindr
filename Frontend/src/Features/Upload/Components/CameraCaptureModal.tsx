@@ -87,7 +87,16 @@ const CameraCaptureModal = ({ open, onClose, onCapture }: CameraCaptureModalProp
                 sx: { borderRadius: 3, overflow: 'hidden' }
             }}
         >
-            <Box sx={{ position: 'relative', bgcolor: 'black', height: 400, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <Box sx={{
+                position: 'relative',
+                bgcolor: 'black',
+                width: '100%',
+                aspectRatio: '1 / 1', // Force square shape - USER REQUEST
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                overflow: 'hidden' // Ensure video doesn't bleed out
+            }}>
                 {error ? (
                     <Typography color="error">{error}</Typography>
                 ) : (

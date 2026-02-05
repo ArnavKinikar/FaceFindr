@@ -1,15 +1,18 @@
-import { Box, Typography, alpha, useTheme } from '@mui/material';
+import { Box, Typography, alpha, useTheme, Button } from '@mui/material';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import UploadActions from './UploadActions';
 import { uploadFile } from '../../../Services/api';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const UploadDropZone = () => {
     const theme = useTheme();
+    const navigate = useNavigate();
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+    const [isUploading, setIsUploading] = useState(false);
 
-    const handleFileSelect = async (file: File) => {
+    const handleFileSelect = (file: File) => {
         setSelectedFile(file);
 
         // Create preview URL
@@ -19,14 +22,27 @@ const UploadDropZone = () => {
         const newPreviewUrl = URL.createObjectURL(file);
         setPreviewUrl(newPreviewUrl);
 
-        console.log('Selected file:', file.name);
+        // Reset uploading state if a new file is selected
+        setIsUploading(false);
+    };
+
+    const handleSubmit = async () => {
+        if (!selectedFile) return;
+
+        setIsUploading(true);
+        console.log('Submitting file:', selectedFile.name);
+
         try {
-            const response = await uploadFile(file);
+            const response = await uploadFile(selectedFile);
             console.log('File upload successful:', response);
+            navigate('/gallery');
         } catch (error) {
             console.error('Upload failed:', error);
+        } finally {
+            setIsUploading(false);
         }
     };
+
 
     return (
         <Box
@@ -41,7 +57,7 @@ const UploadDropZone = () => {
                 bgcolor: theme.palette.mode === 'dark' ? alpha(theme.palette.primary.main, 0.05) : 'grey.50',
                 px: 3,
                 py: { xs: 6, md: 10 }, // Responsive padding
-                cursor: 'pointer',
+                cursor: 'default', // Changed from pointer since we shouldn't trigger file select on the whole box now that we have buttons
                 transition: 'border-color 0.2s',
                 '&:hover': {
                     borderColor: 'primary.main'
@@ -90,6 +106,29 @@ const UploadDropZone = () => {
             )}
 
             <UploadActions onFileSelect={handleFileSelect} />
+
+            {selectedFile && (
+                <Box sx={{ width: '100%', maxWidth: 400, mt: 2 }}>
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        size="large"
+                        fullWidth
+                        disabled={isUploading}
+                        onClick={handleSubmit}
+                        sx={{
+                            height: 48,
+                            fontSize: '1rem',
+                            fontWeight: 700,
+                            textTransform: 'none',
+                            borderRadius: 2,
+                            boxShadow: theme.shadows[4]
+                        }}
+                    >
+                        {isUploading ? 'Uploading...' : 'Submit Photo'}
+                    </Button>
+                </Box>
+            )}
         </Box>
     );
 };
