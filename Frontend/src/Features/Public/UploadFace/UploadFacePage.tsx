@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Box, Container, Paper, Typography, Button, LinearProgress, Avatar, IconButton, Stack, Tooltip } from '@mui/material';
+import { Box, Container, Paper, Typography, Button, LinearProgress, Avatar, IconButton, Stack } from '@mui/material';
 import LockIcon from '@mui/icons-material/Lock';
 import AddAPhotoIcon from '@mui/icons-material/AddAPhoto';
 import CloseIcon from '@mui/icons-material/Close';

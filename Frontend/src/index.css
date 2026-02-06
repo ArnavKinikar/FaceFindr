@@ -1,10 +1,7 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-/* Global styles if needed, otherwise rely on MUI CssBaseline */
 html,
 body,
 #root {
   height: 100%;
+  margin: 0;
+  padding: 0;
 }
