@@ -12,13 +12,14 @@ const UploadHeader: React.FC<UploadHeaderProps> = ({ title, description }) => {
             <Typography
                 variant="h3"
                 component="h1"
-                sx={{
-                    fontWeight: 700,
-                    letterSpacing: '-0.02em',
-                    mb: 2,
-                    color: 'text.primary',
-                    fontSize: { xs: '1.75rem', md: '2.25rem' } // Slightly smaller on mobile
-                }}
+        sx={{
+          fontWeight: 900,
+          letterSpacing: '-0.02em',
+          mb: 2,
+          color: 'text.primary',
+          fontSize: { xs: '2.5rem', md: '3rem' } // Increased for hero feel
+        }}
+
             >
                 {title}
             </Typography>

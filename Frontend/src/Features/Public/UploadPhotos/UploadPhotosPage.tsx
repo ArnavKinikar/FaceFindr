@@ -3,7 +3,7 @@ import UploadHeader from './Components/UploadHeader';
 import UploadCard from './Components/UploadCard';
 import UploadSecurityFeatures from './Components/UploadSecurityFeatures';
 
-const UploadPage = () => {
+const UploadPhotosPage = () => {
     return (
         <Box
             sx={{
@@ -30,4 +30,4 @@ const UploadPage = () => {
     );
 };
 
-export default UploadPage;
+export default UploadPhotosPage;
