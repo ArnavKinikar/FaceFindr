@@ -7,7 +7,7 @@ import DownloadIcon from '@mui/icons-material/Download';
 import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
 import { motion, AnimatePresence } from 'framer-motion';
-import { PhotoData } from '../AdminDashboard';
+import type { PhotoData } from '../AdminDashboard';
 
 interface AdminPhotoGridProps {
   photos: PhotoData[];
