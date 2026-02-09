@@ -1,33 +1,26 @@
-import { Box, Typography } from '@mui/material';
+import { Box, CssBaseline } from '@mui/material';
+import HeroSection from './Components/HeroSection';
+import HowItWorksSection from './Components/HowItWorksSection';
+import ShowcaseSection from './Components/ShowcaseSection';
+import CTASection from './Components/CTASection';
+import HomeFooter from './Components/HomeFooter';
 
 function HomePage() {
-    return (
-        <Box
-            sx={{
-                flex: 1,
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                px: 2
-            }}
-        >
-            <Typography
-                variant="h1"
-                component="h1"
-                sx={{
-                    fontSize: { xs: '80px', md: '120px' },
-                    fontWeight: 300,
-                    letterSpacing: '-0.04em',
-                    lineHeight: 1,
-                    userSelect: 'none',
-                    textAlign: 'center'
-                }}
-            >
-                Face Findr
-            </Typography>
-        </Box>
-    );
+  return (
+    <Box sx={{ bgcolor: 'background.default', color: 'text.primary', minHeight: '100vh' }}>
+      <CssBaseline />
+      
+      <HeroSection />
+      
+      <HowItWorksSection />
+      
+      <ShowcaseSection />
+      
+      <CTASection />
+      
+      <HomeFooter />
+    </Box>
+  );
 }
 
 export default HomePage;
