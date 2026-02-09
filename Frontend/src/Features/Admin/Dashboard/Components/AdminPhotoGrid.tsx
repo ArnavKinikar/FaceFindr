@@ -1,59 +1,65 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Box, Button, Tabs, Tab, Grid, IconButton } from '@mui/material';
+import { Box, Button, Tabs, Tab, Grid, IconButton, CircularProgress, Typography } from '@mui/material';
 import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
 import DeleteIcon from '@mui/icons-material/Delete';
 import DownloadIcon from '@mui/icons-material/Download';
 import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
+import { motion, AnimatePresence } from 'framer-motion';
+import { PhotoData } from '../AdminDashboard';
 
-const photos = [
-  {
-    id: 1,
-    title: 'Wedding Couple',
-    alt: 'Elegant wedding couple walking through vineyard at sunset',
-    src: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDeYFjhFb5mP_wRlm5TPQ5d6_ZVxmlqx6vs4mdAo8F6xGd5zz_ng3yZ-WAOr22x65OVihOK33IPX0xcGouMMoAhcSCZ9iX_u50n0ve2fJAfDENFgbAu45F5XgA69TL5aNFYOe12liRRAheXsaBF8gONH1rYcqcp5d-eZUDXaEfZSqfkoKloxcx9GfGYlkpP0lLccdIbA8e9c-lBfFSSmPfYgNp3yJascwuHb4R8zh6owNg689XB-xmeKVu3qJXi6oyJpq04y41mJTBv',
-    pending: false
-  },
-  {
-    id: 2,
-    title: 'Wedding Cake',
-    alt: 'Close up of a minimalist white three-tier wedding cake',
-    src: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDwUEFFyUEDzqXCjAAEQNxpqmXRY9q9Y58j_7UfPGB9CFqv2dscCyMhYe2UPk2sdKOAGBVwk2_OP9nDL9CQTPyk5VZXU8kjfGhrdyrHQX9L5cQFIDMhQGBzXvVIr1oCObXwzdNyIqKcjDudWklasQAvj_jcl6sby9lFxTbeFdb1Le5ohOMc3X1pp_yHzN96pUeQlVvLmRVD2htdkRptUoNshTmO0qkVfZ_4_Wa0wgAQ6dr3ZkcNHJgiJRKddc3yhYQ4uJuDFhdg8phW',
-    pending: true
-  },
-  {
-    id: 3,
-    title: 'Rings',
-    alt: 'Wedding rings resting on a bed of fresh roses',
-    src: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBbkdY1XNu_sKqLrjsp5y5NBas3BPzhsPEBzLv_Xqp97urXSsE1I-G89b_G2wYYeKTkiu7uVfQhRwOAj3yaCN2cIFK8Lm8JTKEfCfWmH9QOlJACzaOyy5N6P_uedCv4k3dXBQGmIj7uc1h7yDCLQCMDs3-3RthXb5kZhzV2L4VP_ht-nvBKb34iTuh3Wxko5Uxmd_dQmAtlNRYvsKzociVRITlDmmepWyXnbC2iJ2YpCgPauEAT-eJgh9ex44lS_p9E-EVsWk0nFeqa',
-    pending: false
-  },
-  {
-    id: 4,
-    title: 'Table Setting',
-    alt: 'Luxury outdoor table setting with gold cutlery and floral centerpiece',
-    src: 'https://lh3.googleusercontent.com/aida-public/AB6AXuB8zDLZMWM-mIbfXTgfKtyHJeWrERO80pfE6A5m8Blxp5pbcLVv-n2iwZ6sXNKCBa1Ym4z_6S1aEqVNke8RTi5zjyOYtcNIH2bmgD4niLZr0FrPfQmwqX7phytBmoi6oqpxHqyRLOFSsrZFFPTDB3jETL3spj8P2OTIEMU4uaM6iGNkNVj9NM_O-3YZYUsQIyU0o6xraWo1ckr6NJ3UO4APVdIF78JFhAKvcAjdIB6CmQqiwvGwmsxS2Xm0PBLDfZY_GKOrYbQUpJOq',
-    pending: false
-  },
-  {
-    id: 5,
-    title: 'Guests',
-    alt: 'Candid shot of happy wedding guests laughing during cocktail hour',
-    src: 'https://lh3.googleusercontent.com/aida-public/AB6AXuASs4w7zXkp90XWmm-5HfFa5GK1ERu9Hr0EGoY0bEx9o9vk1yaQZvq5itrq5K3a9LBSSFJCDjz93Hm4UGVWAQ9V79vuFXWLaPv6RBKxZ1Pv9nVqveAtPy_aPCTH3eFiGl6wnfqlX_r6OjorbDQ5O1SIHfALELjxjz6PVMG5B0H5m61KMEdXeMa-RRBeEsf0Gzgp_Qh9jyCQ59_9FKltWwdPx1h9jLkyBXjN0cFnsZfERHgnFst8VdtT6tDrT0B-X1wOLGhsX9jpbqCp',
-    pending: false
-  }
-];
+interface AdminPhotoGridProps {
+  photos: PhotoData[];
+  loading: boolean;
+  setPhotos: React.Dispatch<React.SetStateAction<PhotoData[]>>;
+  onRefresh: () => Promise<void>;
+}
 
-const AdminPhotoGrid = () => {
+const API_BASE = 'http://localhost:8000';
+
+const AdminPhotoGrid = ({ photos, loading, setPhotos, onRefresh }: AdminPhotoGridProps) => {
   const [activeTab, setActiveTab] = useState(0);
+  const [processingId, setProcessingId] = useState<string | null>(null);
   const navigate = useNavigate();
 
   const handleTabChange = (_: React.SyntheticEvent, newValue: number) => {
     setActiveTab(newValue);
   };
 
+  const handleApprove = async (id: string, filename: string) => {
+    setProcessingId(id);
+    try {
+      const response = await fetch(`${API_BASE}/approve`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ filename }),
+      });
+
+      if (response.ok) {
+        // Optimistically update and then refresh from server to sync counts
+        setPhotos(prev => prev.map(p => 
+          p.id === id ? { ...p, pending: false, src: `${API_BASE}/images/${filename}` } : p
+        ));
+        await onRefresh();
+      } else {
+        console.error('Approval failed');
+      }
+    } catch (error) {
+      console.error('Error approving photo:', error);
+    } finally {
+      setProcessingId(null);
+    }
+  };
+
+  const handleReject = (id: string) => {
+    setPhotos(prev => prev.filter(p => p.id !== id));
+  };
+
   const filteredPhotos = activeTab === 0 ? photos.filter(p => !p.pending) : photos.filter(p => p.pending);
+
+  const pendingCount = photos.filter(p => p.pending).length;
+  const approvedCount = photos.filter(p => !p.pending).length;
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', mb: 10 }}>
@@ -99,7 +105,7 @@ const AdminPhotoGrid = () => {
                     color: activeTab === 0 ? 'white' : 'text.secondary',
                   }}
                 >
-                  1.2k
+                  {approvedCount}
                 </Box>
               </Box>
             }
@@ -118,7 +124,7 @@ const AdminPhotoGrid = () => {
                     color: activeTab === 1 ? 'white' : 'text.secondary',
                   }}
                 >
-                  138
+                  {pendingCount}
                 </Box>
               </Box>
             }
@@ -142,124 +148,154 @@ const AdminPhotoGrid = () => {
       </Box>
 
       {/* Photo Grid */}
-      <Grid container spacing={2}>
-        {filteredPhotos.map((photo) => (
-          <Grid size={{ xs: 6, md: 4, lg: 3, xl: 2.4 }} key={photo.id}>
-            <Box
-              sx={{
-                position: 'relative',
-                aspectRatio: '1/1',
-                borderRadius: 3,
-                overflow: 'hidden',
-                bgcolor: 'action.hover',
-                border: '1px solid',
-                borderColor: 'divider',
-                '&:hover .overlay': { opacity: 1 },
-                '&:hover img': { transform: 'scale(1.1)' },
-              }}
-            >
-              <Box
-                component="img"
-                src={photo.src}
-                alt={photo.alt}
-                sx={{
-                  width: '100%',
-                  height: '100%',
-                  objectFit: 'cover',
-                  transition: 'transform 0.5s ease',
-                }}
-              />
-
-              <Box
-                className="overlay"
-                sx={{
-                  position: 'absolute',
-                  inset: 0,
-                  opacity: 0,
-                  transition: 'opacity 0.3s',
-                  background: 'linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 60%)',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'flex-end',
-                  p: 2,
-                }}
+      {loading ? (
+        <Box sx={{ display: 'flex', justifyContent: 'center', py: 10 }}>
+          <CircularProgress />
+        </Box>
+      ) : filteredPhotos.length === 0 ? (
+        <Box sx={{ textAlign: 'center', py: 10, color: 'text.secondary' }}>
+          <Typography variant="h6">No photos found in this category.</Typography>
+        </Box>
+      ) : (
+        <Grid container spacing={2} component={motion.div} layout>
+          <AnimatePresence mode="popLayout">
+            {filteredPhotos.map((photo) => (
+              <Grid 
+                size={{ xs: 6, md: 4, lg: 3, xl: 2.4 }} 
+                key={photo.id}
+                component={motion.div}
+                layout
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.8, transition: { duration: 0.2 } }}
+                transition={{ type: "spring", damping: 25, stiffness: 300 }}
               >
-                <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1 }}>
-                  {activeTab === 0 ? (
-                    <>
-                      <IconButton
-                        size="small"
-                        sx={{
-                          bgcolor: 'rgba(255,255,255,0.2)',
-                          backdropFilter: 'blur(8px)',
-                          color: 'white',
-                          '&:hover': { bgcolor: 'rgba(255,255,255,0.3)' },
-                        }}
-                      >
-                        <DownloadIcon fontSize="small" />
-                      </IconButton>
-                      <IconButton
-                        size="small"
-                        sx={{
-                          bgcolor: 'rgba(255,255,255,0.2)',
-                          backdropFilter: 'blur(8px)',
-                          color: 'white',
-                          '&:hover': { bgcolor: 'error.main' },
-                        }}
-                      >
-                        <DeleteIcon fontSize="small" />
-                      </IconButton>
-                    </>
-                  ) : (
-                    <>
-                      <IconButton
-                        size="small"
-                        sx={{
-                          bgcolor: 'rgba(255,255,255,0.2)',
-                          backdropFilter: 'blur(8px)',
-                          color: 'white',
-                          '&:hover': { bgcolor: 'success.main' },
-                        }}
-                      >
-                        <CheckIcon fontSize="small" />
-                      </IconButton>
-                      <IconButton
-                        size="small"
-                        sx={{
-                          bgcolor: 'rgba(255,255,255,0.2)',
-                          backdropFilter: 'blur(8px)',
-                          color: 'white',
-                          '&:hover': { bgcolor: 'error.main' },
-                        }}
-                      >
-                        <CloseIcon fontSize="small" />
-                      </IconButton>
-                    </>
-                  )}
+                <Box
+                  sx={{
+                    position: 'relative',
+                    aspectRatio: '1/1',
+                    borderRadius: 3,
+                    overflow: 'hidden',
+                    bgcolor: 'action.hover',
+                    border: '1px solid',
+                    borderColor: 'divider',
+                    '&:hover .overlay': { opacity: 1 },
+                    '&:hover img': { transform: 'scale(1.1)' },
+                  }}
+                >
+                  <Box
+                    component="img"
+                    src={photo.src}
+                    alt={photo.alt}
+                    sx={{
+                      width: '100%',
+                      height: '100%',
+                      objectFit: 'cover',
+                      transition: 'transform 0.5s ease',
+                    }}
+                  />
+
+                  <Box
+                    className="overlay"
+                    sx={{
+                      position: 'absolute',
+                      inset: 0,
+                      opacity: processingId === photo.id ? 1 : 0,
+                      transition: 'opacity 0.3s',
+                      background: 'linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 60%)',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      justifyContent: 'flex-end',
+                      p: 2,
+                      bgcolor: processingId === photo.id ? 'rgba(0,0,0,0.4)' : 'transparent',
+                    }}
+                  >
+                    <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1 }}>
+                      {processingId === photo.id ? (
+                        <CircularProgress size={24} color="inherit" />
+                      ) : activeTab === 0 ? (
+                        <>
+                          <IconButton
+                            size="small"
+                            sx={{
+                              bgcolor: 'rgba(255,255,255,0.2)',
+                              backdropFilter: 'blur(8px)',
+                              color: 'white',
+                              '&:hover': { bgcolor: 'rgba(255,255,255,0.3)' },
+                            }}
+                          >
+                            <DownloadIcon fontSize="small" />
+                          </IconButton>
+                          <IconButton
+                            size="small"
+                            onClick={() => handleReject(photo.id)}
+                            sx={{
+                              bgcolor: 'rgba(255,255,255,0.2)',
+                              backdropFilter: 'blur(8px)',
+                              color: 'white',
+                              '&:hover': { bgcolor: 'error.main' },
+                            }}
+                          >
+                            <DeleteIcon fontSize="small" />
+                          </IconButton>
+                        </>
+                      ) : (
+                        <>
+                          <IconButton
+                            size="small"
+                            onClick={() => handleApprove(photo.id, photo.filename)}
+                            sx={{
+                              bgcolor: 'rgba(255,255,255,0.2)',
+                              backdropFilter: 'blur(8px)',
+                              color: 'white',
+                              '&:hover': { bgcolor: 'success.main' },
+                            }}
+                          >
+                            <CheckIcon fontSize="small" />
+                          </IconButton>
+                          <IconButton
+                            size="small"
+                            onClick={() => handleReject(photo.id)}
+                            sx={{
+                              bgcolor: 'rgba(255,255,255,0.2)',
+                              backdropFilter: 'blur(8px)',
+                              color: 'white',
+                              '&:hover': { bgcolor: 'error.main' },
+                            }}
+                          >
+                            <CloseIcon fontSize="small" />
+                          </IconButton>
+                        </>
+                      )}
+                    </Box>
+                  </Box>
                 </Box>
-              </Box>
-            </Box>
-          </Grid>
-        ))}
-      </Grid>
+              </Grid>
+            ))}
+          </AnimatePresence>
+        </Grid>
+      )}
 
       {/* Load More Section */}
-      <Box sx={{ display: 'flex', justifyContent: 'center', mt: 8, mb: 4 }}>
-        <Button
-          variant="outlined"
-          size="large"
-          sx={{
-            borderRadius: 3,
-            px: 6,
-            fontWeight: 700,
-            borderColor: 'divider',
-            color: 'text.secondary',
-            '&:hover': { bgcolor: 'action.hover', borderColor: 'text.disabled' },
-          }}
-        >
-          Load More Images
-        </Button>
-      </Box>
+      {!loading && filteredPhotos.length > 0 && (
+        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 8, mb: 4 }}>
+          <Button
+            variant="outlined"
+            size="large"
+            disabled
+            sx={{
+              borderRadius: 3,
+              px: 6,
+              fontWeight: 700,
+              borderColor: 'divider',
+              color: 'text.secondary',
+              '&:hover': { bgcolor: 'action.hover', borderColor: 'text.disabled' },
+            }}
+          >
+            Pagination Not Implemented
+          </Button>
+        </Box>
+      )}
     </Box>
   );
 };

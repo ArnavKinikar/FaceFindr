@@ -68,9 +68,8 @@ class FaceMatcher:
 
     def _init_model(self):
         print("Initializing InsightFace model...")
-        # providers=['CUDAExecutionProvider', 'CPUExecutionProvider'] if gpu is available
-        self.app = FaceAnalysis(name="buffalo_l", root=".")
-        self.app.prepare(ctx_id=0, det_size=(640, 640)) 
+        self.app = FaceAnalysis(name="buffalo_l")
+        self.app.prepare(ctx_id=-1, det_size=(640, 640)) 
 
     def _cosine_similarity(self, a, b):
         return float(np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b)))

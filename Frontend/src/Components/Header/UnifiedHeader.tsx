@@ -81,6 +81,16 @@ const UnifiedHeader = ({ variant }: UnifiedHeaderProps) => {
                         {activeVariant === 'home' && (
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                                 <Button 
+                                    onClick={() => navigate('/admin/dashboard')}
+                                    sx={{ 
+                                        fontWeight: 700, 
+                                        color: 'text.secondary',
+                                        '&:hover': { color: 'primary.main' }
+                                    }}
+                                >
+                                    Admin
+                                </Button>
+                                <Button 
                                     onClick={() => navigate('/auth/login')}
                                     sx={{ 
                                         fontWeight: 700, 
