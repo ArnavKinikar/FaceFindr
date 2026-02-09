@@ -6,7 +6,7 @@ const CTASection = () => {
 
   return (
     <Box component="section" sx={{ py: 12, px: 3 }}>
-      <Container maxWidth="md">
+      <Container maxWidth="lg">
         <Paper
           sx={{
             p: { xs: 6, md: 10 },

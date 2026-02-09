@@ -2,10 +2,10 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Box, Button, Tabs, Tab, Grid, IconButton } from '@mui/material';
 import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
+import DeleteIcon from '@mui/icons-material/Delete';
+import DownloadIcon from '@mui/icons-material/Download';
 import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
 
 const photos = [
   {
@@ -53,6 +53,8 @@ const AdminPhotoGrid = () => {
     setActiveTab(newValue);
   };
 
+  const filteredPhotos = activeTab === 0 ? photos.filter(p => !p.pending) : photos.filter(p => p.pending);
+
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', mb: 10 }}>
       {/* Navigation Tabs & Primary Action */}
@@ -86,7 +88,7 @@ const AdminPhotoGrid = () => {
           <Tab
             label={
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                My Uploads
+                All Photos
                 <Box
                   sx={{
                     fontSize: '10px',
@@ -141,7 +143,7 @@ const AdminPhotoGrid = () => {
 
       {/* Photo Grid */}
       <Grid container spacing={2}>
-        {photos.map((photo) => (
+        {filteredPhotos.map((photo) => (
           <Grid size={{ xs: 6, md: 4, lg: 3, xl: 2.4 }} key={photo.id}>
             <Box
               sx={{
@@ -165,85 +167,77 @@ const AdminPhotoGrid = () => {
                   height: '100%',
                   objectFit: 'cover',
                   transition: 'transform 0.5s ease',
-                  filter: photo.pending ? 'blur(4px)' : 'none',
                 }}
               />
 
-              {photo.pending ? (
-                <Box
-                  sx={{
-                    position: 'absolute',
-                    inset: 0,
-                    bgcolor: 'rgba(16, 25, 34, 0.4)',
-                    backdropFilter: 'blur(2px)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: 2,
-                  }}
-                >
-                  <IconButton
-                    sx={{
-                      bgcolor: 'primary.main',
-                      color: 'white',
-                      '&:hover': { bgcolor: 'primary.dark', transform: 'scale(1.1)' },
-                      transition: 'all 0.2s',
-                    }}
-                  >
-                    <CheckIcon />
-                  </IconButton>
-                  <IconButton
-                    sx={{
-                      bgcolor: 'white',
-                      color: 'grey.900',
-                      '&:hover': { bgcolor: 'grey.100', transform: 'scale(1.1)' },
-                      transition: 'all 0.2s',
-                    }}
-                  >
-                    <CloseIcon />
-                  </IconButton>
+              <Box
+                className="overlay"
+                sx={{
+                  position: 'absolute',
+                  inset: 0,
+                  opacity: 0,
+                  transition: 'opacity 0.3s',
+                  background: 'linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 60%)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'flex-end',
+                  p: 2,
+                }}
+              >
+                <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1 }}>
+                  {activeTab === 0 ? (
+                    <>
+                      <IconButton
+                        size="small"
+                        sx={{
+                          bgcolor: 'rgba(255,255,255,0.2)',
+                          backdropFilter: 'blur(8px)',
+                          color: 'white',
+                          '&:hover': { bgcolor: 'rgba(255,255,255,0.3)' },
+                        }}
+                      >
+                        <DownloadIcon fontSize="small" />
+                      </IconButton>
+                      <IconButton
+                        size="small"
+                        sx={{
+                          bgcolor: 'rgba(255,255,255,0.2)',
+                          backdropFilter: 'blur(8px)',
+                          color: 'white',
+                          '&:hover': { bgcolor: 'error.main' },
+                        }}
+                      >
+                        <DeleteIcon fontSize="small" />
+                      </IconButton>
+                    </>
+                  ) : (
+                    <>
+                      <IconButton
+                        size="small"
+                        sx={{
+                          bgcolor: 'rgba(255,255,255,0.2)',
+                          backdropFilter: 'blur(8px)',
+                          color: 'white',
+                          '&:hover': { bgcolor: 'success.main' },
+                        }}
+                      >
+                        <CheckIcon fontSize="small" />
+                      </IconButton>
+                      <IconButton
+                        size="small"
+                        sx={{
+                          bgcolor: 'rgba(255,255,255,0.2)',
+                          backdropFilter: 'blur(8px)',
+                          color: 'white',
+                          '&:hover': { bgcolor: 'error.main' },
+                        }}
+                      >
+                        <CloseIcon fontSize="small" />
+                      </IconButton>
+                    </>
+                  )}
                 </Box>
-              ) : (
-                <Box
-                  className="overlay"
-                  sx={{
-                    position: 'absolute',
-                    inset: 0,
-                    opacity: 0,
-                    transition: 'opacity 0.3s',
-                    background: 'linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 60%)',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'flex-end',
-                    p: 2,
-                  }}
-                >
-                  <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1 }}>
-                    <IconButton
-                      size="small"
-                      sx={{
-                        bgcolor: 'rgba(255,255,255,0.2)',
-                        backdropFilter: 'blur(8px)',
-                        color: 'white',
-                        '&:hover': { bgcolor: 'rgba(255,255,255,0.3)' },
-                      }}
-                    >
-                      <EditIcon fontSize="small" />
-                    </IconButton>
-                    <IconButton
-                      size="small"
-                      sx={{
-                        bgcolor: 'rgba(255,255,255,0.2)',
-                        backdropFilter: 'blur(8px)',
-                        color: 'white',
-                        '&:hover': { bgcolor: 'error.main' },
-                      }}
-                    >
-                      <DeleteIcon fontSize="small" />
-                    </IconButton>
-                  </Box>
-                </Box>
-              )}
+              </Box>
             </Box>
           </Grid>
         ))}

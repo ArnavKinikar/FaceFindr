@@ -15,7 +15,7 @@ const AdminDashboard = () => {
       }}
     >
       {/* Main Content Area */}
-      <Container maxWidth="lg" component="main" sx={{ pt: 4, pb: 8 }}>
+      <Container maxWidth="xl" component="main" sx={{ pt: 4, pb: 8 }}>
         {/* Page Header Section (Hero) */}
         <AlbumHero />
 

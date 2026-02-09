@@ -11,7 +11,7 @@ const ProfilePage = () => {
 
     return (
         <Box sx={{ flexGrow: 1, bgcolor: 'background.default', color: 'text.primary', py: { xs: 4, md: 8 } }}>
-            <Container maxWidth="md">
+            <Container maxWidth="lg">
                 <Button 
                     startIcon={<ArrowBackIcon />}
                     onClick={() => navigate('/admin/dashboard')} 

@@ -19,7 +19,7 @@ const HeroSection = () => {
             : 'radial-gradient(circle at top left, #f0f7ff 0%, #ffffff 50%, #fdf2f8 100%)',
       }}
     >
-      <Container maxWidth="md" sx={{ textAlign: 'center', position: 'relative', zIndex: 1 }}>
+      <Container maxWidth="lg" sx={{ textAlign: 'center', position: 'relative', zIndex: 1 }}>
         <Chip
           label="AI-Powered Facial Recognition"
           color="primary"

@@ -10,7 +10,7 @@ const images = [
 const ShowcaseSection = () => {
   return (
     <Box component="section" sx={{ pb: 15, bgcolor: 'background.default' }}>
-      <Container maxWidth="lg">
+      <Container maxWidth="xl">
         <Grid container spacing={2}>
           {images.map((src, index) => (
             <Grid size={{ xs: 6, md: 3 }} key={index}>

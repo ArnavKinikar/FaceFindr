@@ -1,4 +1,4 @@
-import { Box, Container, Typography, Stack, Link as MuiLink, Divider } from '@mui/material';
+import { Box, Container, Typography, Stack, Link as MuiLink } from '@mui/material';
 import { Link } from 'react-router-dom';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 
@@ -15,7 +15,7 @@ const HomeFooter = () => {
         bgcolor: 'background.default',
       }}
     >
-      <Container maxWidth="lg">
+      <Container maxWidth="xl">
         <Stack
           direction={{ xs: 'column', md: 'row' }}
           justifyContent="space-between"

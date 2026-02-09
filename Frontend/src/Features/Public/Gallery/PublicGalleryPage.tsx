@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { fetchYourPhotos, fetchAllPhotos } from '../../../Services/api';
 import type { Photo } from '../../../Services/api';
-import { Box, Container, Typography, Tab, Tabs, Grid, Paper, IconButton, CircularProgress, Button, Stack, useTheme } from '@mui/material';
+import { Box, Container, Typography, Tab, Tabs, Paper, IconButton, CircularProgress, Button, Stack, useTheme } from '@mui/material';
 import DownloadIcon from '@mui/icons-material/Download';
 import ZoomInIcon from '@mui/icons-material/ZoomIn';
 import RefreshIcon from '@mui/icons-material/Refresh';
@@ -44,7 +44,7 @@ const PublicGalleryPage = () => {
         transition: 'background-color 0.3s',
       }}
     >
-      <Container maxWidth="lg" component="main" sx={{ flex: 1, py: 6 }}>
+      <Container maxWidth="xl" component="main" sx={{ flex: 1, py: 6 }}>
         {/* Hero Title & Count */}
         <Box
           sx={{

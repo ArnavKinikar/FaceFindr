@@ -24,7 +24,7 @@ const AlbumLandingPage = () => {
         overflowX: 'hidden',
       }}
     >
-      <Container maxWidth="lg" component="main" sx={{ flex: 1, pt: 12, pb: 10 }}>
+      <Container maxWidth="xl" component="main" sx={{ flex: 1, pt: 12, pb: 10 }}>
         {/* Event Identity */}
         <Box sx={{ textAlign: 'center', mb: 8 }}>
           <Typography
@@ -261,7 +261,7 @@ const AlbumLandingPage = () => {
                     {/* Re-rendering icon without opacity for clarity */}
                   </Box>
                   <Box sx={{ position: 'relative', mt: -11, mb: 3, color: 'primary.main' }}>
-                    {React.cloneElement(step.icon as React.ReactElement, { sx: { fontSize: 32 } })}
+                    {React.cloneElement(step.icon as any, { sx: { fontSize: 32 } })}
                   </Box>
                   <Typography variant="h6" sx={{ fontWeight: 700, mb: 1.5 }}>
                     {step.title}
@@ -306,7 +306,7 @@ const AlbumLandingPage = () => {
           bgcolor: 'background.default',
         }}
       >
-        <Container maxWidth="lg">
+        <Container maxWidth="xl">
           <Stack
             direction={{ xs: 'column', md: 'row' }}
             justifyContent="space-between"

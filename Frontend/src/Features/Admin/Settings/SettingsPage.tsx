@@ -18,7 +18,7 @@ const SettingsPage = () => {
                 px: { xs: 2, md: 0 },
             }}
         >
-            <Container maxWidth="md">
+            <Container maxWidth="lg">
                 <Stack spacing={4}>
                     {/* Breadcrumbs and Header */}
                     <Box>

@@ -34,7 +34,7 @@ const UnifiedHeader = ({ variant }: UnifiedHeaderProps) => {
                 color: 'text.primary',
             }}
         >
-            <Container maxWidth="lg">
+            <Container maxWidth="xl">
                 <Toolbar disableGutters sx={{ height: 64, justifyContent: 'space-between' }}>
                     {/* Logo Section */}
                     <Box 
@@ -111,11 +111,23 @@ const UnifiedHeader = ({ variant }: UnifiedHeaderProps) => {
                         {activeVariant === 'admin' && (
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
                                 <Box sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center', gap: 3 }}>
-                                    <Button sx={{ fontWeight: 700, color: 'primary.main' }}>Albums</Button>
-                                    <Button sx={{ fontWeight: 500, color: 'text.secondary', '&:hover': { color: 'text.primary' } }}>Analytics</Button>
+                                    <Button 
+                                        onClick={() => navigate('/admin/dashboard')}
+                                        sx={{ 
+                                            fontWeight: location.pathname === '/admin/dashboard' ? 700 : 500, 
+                                            color: location.pathname === '/admin/dashboard' ? 'primary.main' : 'text.secondary',
+                                            '&:hover': { color: location.pathname === '/admin/dashboard' ? 'primary.main' : 'text.primary' }
+                                        }}
+                                    >
+                                        Albums
+                                    </Button>
                                     <Button 
                                         onClick={() => navigate('/admin/settings')}
-                                        sx={{ fontWeight: 500, color: 'text.secondary', '&:hover': { color: 'text.primary' } }}
+                                        sx={{ 
+                                            fontWeight: location.pathname === '/admin/settings' ? 700 : 500, 
+                                            color: location.pathname === '/admin/settings' ? 'primary.main' : 'text.secondary',
+                                            '&:hover': { color: location.pathname === '/admin/settings' ? 'primary.main' : 'text.primary' }
+                                        }}
                                     >
                                         Settings
                                     </Button>

@@ -22,7 +22,7 @@ const steps = [
 const HowItWorksSection = () => {
   return (
     <Box component="section" sx={{ py: 15, bgcolor: 'background.default' }}>
-      <Container maxWidth="lg">
+      <Container maxWidth="xl">
         <Box sx={{ textAlign: 'center', mb: 10 }}>
           <Typography variant="h3" sx={{ fontWeight: 800, mb: 2, color: 'text.primary' }}>
             Relive the moments that matter
