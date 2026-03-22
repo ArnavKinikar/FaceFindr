@@ -69,7 +69,7 @@ const CTASection = () => {
             <Button
               variant="contained"
               size="large"
-              onClick={() => navigate('/public/upload')}
+              onClick={() => navigate('/auth/login')}
               sx={{
                 px: 5,
                 py: 2,

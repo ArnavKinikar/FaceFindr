@@ -7,45 +7,15 @@ import DownloadIcon from '@mui/icons-material/Download';
 import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
 
-const photos = [
-  {
-    id: 1,
-    title: 'Wedding Couple',
-    alt: 'Elegant wedding couple walking through vineyard at sunset',
-    src: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDeYFjhFb5mP_wRlm5TPQ5d6_ZVxmlqx6vs4mdAo8F6xGd5zz_ng3yZ-WAOr22x65OVihOK33IPX0xcGouMMoAhcSCZ9iX_u50n0ve2fJAfDENFgbAu45F5XgA69TL5aNFYOe12liRRAheXsaBF8gONH1rYcqcp5d-eZUDXaEfZSqfkoKloxcx9GfGYlkpP0lLccdIbA8e9c-lBfFSSmPfYgNp3yJascwuHb4R8zh6owNg689XB-xmeKVu3qJXi6oyJpq04y41mJTBv',
-    pending: false
-  },
-  {
-    id: 2,
-    title: 'Wedding Cake',
-    alt: 'Close up of a minimalist white three-tier wedding cake',
-    src: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDwUEFFyUEDzqXCjAAEQNxpqmXRY9q9Y58j_7UfPGB9CFqv2dscCyMhYe2UPk2sdKOAGBVwk2_OP9nDL9CQTPyk5VZXU8kjfGhrdyrHQX9L5cQFIDMhQGBzXvVIr1oCObXwzdNyIqKcjDudWklasQAvj_jcl6sby9lFxTbeFdb1Le5ohOMc3X1pp_yHzN96pUeQlVvLmRVD2htdkRptUoNshTmO0qkVfZ_4_Wa0wgAQ6dr3ZkcNHJgiJRKddc3yhYQ4uJuDFhdg8phW',
-    pending: true
-  },
-  {
-    id: 3,
-    title: 'Rings',
-    alt: 'Wedding rings resting on a bed of fresh roses',
-    src: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBbkdY1XNu_sKqLrjsp5y5NBas3BPzhsPEBzLv_Xqp97urXSsE1I-G89b_G2wYYeKTkiu7uVfQhRwOAj3yaCN2cIFK8Lm8JTKEfCfWmH9QOlJACzaOyy5N6P_uedCv4k3dXBQGmIj7uc1h7yDCLQCMDs3-3RthXb5kZhzV2L4VP_ht-nvBKb34iTuh3Wxko5Uxmd_dQmAtlNRYvsKzociVRITlDmmepWyXnbC2iJ2YpCgPauEAT-eJgh9ex44lS_p9E-EVsWk0nFeqa',
-    pending: false
-  },
-  {
-    id: 4,
-    title: 'Table Setting',
-    alt: 'Luxury outdoor table setting with gold cutlery and floral centerpiece',
-    src: 'https://lh3.googleusercontent.com/aida-public/AB6AXuB8zDLZMWM-mIbfXTgfKtyHJeWrERO80pfE6A5m8Blxp5pbcLVv-n2iwZ6sXNKCBa1Ym4z_6S1aEqVNke8RTi5zjyOYtcNIH2bmgD4niLZr0FrPfQmwqX7phytBmoi6oqpxHqyRLOFSsrZFFPTDB3jETL3spj8P2OTIEMU4uaM6iGNkNVj9NM_O-3YZYUsQIyU0o6xraWo1ckr6NJ3UO4APVdIF78JFhAKvcAjdIB6CmQqiwvGwmsxS2Xm0PBLDfZY_GKOrYbQUpJOq',
-    pending: false
-  },
-  {
-    id: 5,
-    title: 'Guests',
-    alt: 'Candid shot of happy wedding guests laughing during cocktail hour',
-    src: 'https://lh3.googleusercontent.com/aida-public/AB6AXuASs4w7zXkp90XWmm-5HfFa5GK1ERu9Hr0EGoY0bEx9o9vk1yaQZvq5itrq5K3a9LBSSFJCDjz93Hm4UGVWAQ9V79vuFXWLaPv6RBKxZ1Pv9nVqveAtPy_aPCTH3eFiGl6wnfqlX_r6OjorbDQ5O1SIHfALELjxjz6PVMG5B0H5m61KMEdXeMa-RRBeEsf0Gzgp_Qh9jyCQ59_9FKltWwdPx1h9jLkyBXjN0cFnsZfERHgnFst8VdtT6tDrT0B-X1wOLGhsX9jpbqCp',
-    pending: false
-  }
-];
+interface Photo {
+  id: number;
+  title: string;
+  alt: string;
+  src: string;
+  pending: boolean;
+}
 
-const AdminPhotoGrid = () => {
+const AdminPhotoGrid = ({ photos }: { photos: Photo[] }) => {
   const [activeTab, setActiveTab] = useState(0);
   const navigate = useNavigate();
 
@@ -99,7 +69,7 @@ const AdminPhotoGrid = () => {
                     color: activeTab === 0 ? 'white' : 'text.secondary',
                   }}
                 >
-                  1.2k
+                  {photos.length}
                 </Box>
               </Box>
             }
@@ -118,7 +88,7 @@ const AdminPhotoGrid = () => {
                     color: activeTab === 1 ? 'white' : 'text.secondary',
                   }}
                 >
-                  138
+                  {photos.filter(p => p.pending).length}
                 </Box>
               </Box>
             }
@@ -128,7 +98,7 @@ const AdminPhotoGrid = () => {
           <Button
             variant="contained"
             startIcon={<AddPhotoAlternateIcon />}
-            onClick={() => navigate('/public/upload')}
+            onClick={() => navigate('/admin/upload')}
             sx={{
               borderRadius: 3,
               px: 3,

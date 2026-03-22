@@ -3,25 +3,33 @@ import PhotoLibraryIcon from '@mui/icons-material/PhotoLibrary';
 import VerifiedIcon from '@mui/icons-material/Verified';
 import HourglassEmptyIcon from '@mui/icons-material/HourglassEmpty';
 
-const AlbumStats = () => {
+interface Photo {
+  id: number;
+  title: string;
+  alt: string;
+  src: string;
+  pending: boolean;
+}
+
+const AlbumStats = ({ photos }: { photos: Photo[] }) => {
   const stats = [
     {
       label: 'Total Images',
-      value: '1,240',
+      value: photos.length.toLocaleString(),
       icon: <PhotoLibraryIcon sx={{ fontSize: 32 }} />,
       color: 'primary.main',
       bgcolor: 'rgba(19, 127, 236, 0.1)',
     },
     {
       label: 'Approved',
-      value: '1,102',
+      value: photos.filter(p => !p.pending).length.toLocaleString(),
       icon: <VerifiedIcon sx={{ fontSize: 32 }} />,
       color: 'success.main',
       bgcolor: 'rgba(46, 125, 50, 0.1)',
     },
     {
       label: 'Pending',
-      value: '138',
+      value: photos.filter(p => p.pending).length.toLocaleString(),
       icon: <HourglassEmptyIcon sx={{ fontSize: 32 }} />,
       color: 'warning.main',
       bgcolor: 'rgba(237, 108, 2, 0.1)',

@@ -1,9 +1,30 @@
+import { useState, useEffect } from 'react';
 import { Box, Container, Typography, Stack, Link as MuiLink } from '@mui/material';
 import AlbumHero from './Components/AlbumHero';
 import AlbumStats from './Components/AlbumStats';
 import AdminPhotoGrid from './Components/AdminPhotoGrid';
 
+interface Photo {
+  id: number;
+  title: string;
+  alt: string;
+  src: string;
+  pending: boolean;
+}
+
 const AdminDashboard = () => {
+  const [photos, setPhotos] = useState<Photo[]>([]);
+
+  useEffect(() => {
+    fetch('http://localhost:8000/images')
+      .then(res => res.json())
+      .then(data => {
+        if (data.images) {
+          setPhotos(data.images);
+        }
+      })
+      .catch(err => console.error("Error fetching images:", err));
+  }, []);
   return (
     <Box
       sx={{
@@ -20,10 +41,10 @@ const AdminDashboard = () => {
         <AlbumHero />
 
         {/* Stats Row */}
-        <AlbumStats />
+        <AlbumStats photos={photos} />
 
         {/* Managed Photo Grid (Uploads & Approvals) */}
-        <AdminPhotoGrid />
+        <AdminPhotoGrid photos={photos} />
 
         {/* Usage Policy/Footer Subtle Info */}
         <Box
