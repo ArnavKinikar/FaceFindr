@@ -1,11 +1,14 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Box, Button, Tabs, Tab, Grid, IconButton, CircularProgress, Typography } from '@mui/material';
+import { Box, Button, Tabs, Tab, Grid, IconButton, CircularProgress, Typography, Pagination } from '@mui/material';
 import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
 import DeleteIcon from '@mui/icons-material/Delete';
 import DownloadIcon from '@mui/icons-material/Download';
 import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
+import { motion, AnimatePresence } from 'framer-motion';
+
+const API_BASE = 'http://localhost:8000';
 
 interface Photo {
   id: number;
@@ -15,16 +18,26 @@ interface Photo {
   pending: boolean;
 }
 
-const AdminPhotoGrid = ({ photos }: { photos: Photo[] }) => {
+interface AdminPhotoGridProps {
+  photos: Photo[];
+  setPhotos: React.Dispatch<React.SetStateAction<Photo[]>>;
+  loading: boolean;
+  onRefresh: () => void;
+}
+
+const AdminPhotoGrid = ({ photos, setPhotos, loading, onRefresh }: AdminPhotoGridProps) => {
   const [activeTab, setActiveTab] = useState(0);
-  const [processingId, setProcessingId] = useState<string | null>(null);
+  const [processingId, setProcessingId] = useState<number | null>(null);
+  const [page, setPage] = useState(1);
+  const itemsPerPage = 50;
   const navigate = useNavigate();
 
   const handleTabChange = (_: React.SyntheticEvent, newValue: number) => {
     setActiveTab(newValue);
+    setPage(1);
   };
 
-  const handleApprove = async (id: string, filename: string) => {
+  const handleApprove = async (id: number, filename: string) => {
     setProcessingId(id);
     try {
       const response = await fetch(`${API_BASE}/approve`, {
@@ -49,14 +62,15 @@ const AdminPhotoGrid = ({ photos }: { photos: Photo[] }) => {
     }
   };
 
-  const handleReject = (id: string) => {
+  const handleReject = (id: number) => {
     setPhotos(prev => prev.filter(p => p.id !== id));
   };
 
   const filteredPhotos = activeTab === 0 ? photos.filter(p => !p.pending) : photos.filter(p => p.pending);
 
-  const pendingCount = photos.filter(p => p.pending).length;
-  const approvedCount = photos.filter(p => !p.pending).length;
+  const pageCount = Math.ceil(filteredPhotos.length / itemsPerPage);
+  const paginatedPhotos = filteredPhotos.slice((page - 1) * itemsPerPage, page * itemsPerPage);
+
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', mb: 10 }}>
@@ -149,14 +163,14 @@ const AdminPhotoGrid = ({ photos }: { photos: Photo[] }) => {
         <Box sx={{ display: 'flex', justifyContent: 'center', py: 10 }}>
           <CircularProgress />
         </Box>
-      ) : filteredPhotos.length === 0 ? (
+      ) : paginatedPhotos.length === 0 ? (
         <Box sx={{ textAlign: 'center', py: 10, color: 'text.secondary' }}>
           <Typography variant="h6">No photos found in this category.</Typography>
         </Box>
       ) : (
         <Grid container spacing={2} component={motion.div} layout>
           <AnimatePresence mode="popLayout">
-            {filteredPhotos.map((photo) => (
+            {paginatedPhotos.map((photo) => (
               <Grid 
                 size={{ xs: 6, md: 4, lg: 3, xl: 2.4 }} 
                 key={photo.id}
@@ -240,7 +254,7 @@ const AdminPhotoGrid = ({ photos }: { photos: Photo[] }) => {
                         <>
                           <IconButton
                             size="small"
-                            onClick={() => handleApprove(photo.id, photo.filename)}
+                            onClick={() => handleApprove(photo.id, photo.title)}
                             sx={{
                               bgcolor: 'rgba(255,255,255,0.2)',
                               backdropFilter: 'blur(8px)',
@@ -273,24 +287,16 @@ const AdminPhotoGrid = ({ photos }: { photos: Photo[] }) => {
         </Grid>
       )}
 
-      {/* Load More Section */}
-      {!loading && filteredPhotos.length > 0 && (
+      {/* Pagination Section */}
+      {!loading && pageCount > 1 && (
         <Box sx={{ display: 'flex', justifyContent: 'center', mt: 8, mb: 4 }}>
-          <Button
-            variant="outlined"
+          <Pagination 
+            count={pageCount} 
+            page={page} 
+            onChange={(_, value) => setPage(value)} 
+            color="primary" 
             size="large"
-            disabled
-            sx={{
-              borderRadius: 3,
-              px: 6,
-              fontWeight: 700,
-              borderColor: 'divider',
-              color: 'text.secondary',
-              '&:hover': { bgcolor: 'action.hover', borderColor: 'text.disabled' },
-            }}
-          >
-            Pagination Not Implemented
-          </Button>
+          />
         </Box>
       )}
     </Box>

@@ -35,7 +35,7 @@ const UploadDropZone = () => {
     try {
       const response = await uploadFile(selectedFile);
       console.log('File upload successful:', response);
-      navigate('/gallery');
+      navigate('/public/gallery');
     } catch (error) {
       console.error('Upload failed:', error);
     } finally {

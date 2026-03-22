@@ -1,8 +1,10 @@
-from fastapi import FastAPI, File, UploadFile
+from fastapi import FastAPI, File, UploadFile, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from app.core.matcher import FaceMatcher
 import os
+import uuid
+from typing import List
 
 app = FastAPI()
 
@@ -46,7 +48,7 @@ if os.path.exists(pending_dir):
     app.mount("/pending-images", StaticFiles(directory=pending_dir), name="pending-images")
 
 @app.get("/")
-def read_root():
+async def read_root():
     return {"message": "FaceFindr Backend API"}
 
 import shutil
@@ -57,8 +59,39 @@ from pydantic import BaseModel
 class ApprovalRequest(BaseModel):
     filename: str
 
+def process_approved_photo(filename: str, dst_path: str):
+    handler_script = os.path.join(project_root, "src", "approval_handler.py")
+    result = subprocess.run(
+        [sys.executable, handler_script, filename, dst_path],
+        capture_output=True,
+        text=True,
+        cwd=project_root
+    )
+    if result.returncode != 0:
+        print(f"Error in approval_handler: {result.stderr}")
+    else:
+        print(f"Approval handler output: {result.stdout}")
+    matcher._load_resources()
+
+def process_uploaded_photos(saved_files: list):
+    handler_script = os.path.join(project_root, "src", "approval_handler.py")
+    for saved_file in saved_files:
+        unique_name = saved_file["saved_as"]
+        file_path = os.path.join(images_dir, unique_name)
+        result = subprocess.run(
+            [sys.executable, handler_script, unique_name, file_path],
+            capture_output=True,
+            text=True,
+            cwd=project_root
+        )
+        if result.returncode != 0:
+            print(f"Error in approval_handler: {result.stderr}")
+        else:
+            print(f"Approval handler output: {result.stdout}")
+    matcher._load_resources()
+
 @app.post("/approve")
-async def approve_image(request: ApprovalRequest):
+async def approve_image(request: ApprovalRequest, background_tasks: BackgroundTasks):
     filename = request.filename
     print(f"Approving image: {filename}")
     
@@ -72,28 +105,10 @@ async def approve_image(request: ApprovalRequest):
         # 1. Move file to main images directory
         shutil.move(src_path, dst_path)
         
-        # 2. Trigger embedding and re-clustering
-        # We call the script living in the project root /src
-        handler_script = os.path.join(project_root, "src", "approval_handler.py")
+        # 2. Trigger embedding and re-clustering in background
+        background_tasks.add_task(process_approved_photo, filename, dst_path)
         
-        # Use the same python executable
-        result = subprocess.run(
-            [sys.executable, handler_script, filename, dst_path],
-            capture_output=True,
-            text=True,
-            cwd=project_root # Run from project root so paths in script work
-        )
-        
-        if result.returncode != 0:
-            print(f"Error in approval_handler: {result.stderr}")
-            return {"error": "Processing failed", "details": result.stderr}
-            
-        print(f"Approval handler output: {result.stdout}")
-        
-        # 3. Reload matcher resources to reflect changes
-        matcher._load_resources()
-        
-        return {"success": True, "message": f"Photo {filename} approved and processed"}
+        return {"success": True, "message": f"Photo {filename} approved and processing in background"}
         
     except Exception as e:
         print(f"Exception during approval: {str(e)}")
@@ -111,8 +126,41 @@ async def upload_image(file: UploadFile = File(...)):
     
     return results
 
+@app.post("/admin/upload")
+async def admin_upload(background_tasks: BackgroundTasks, files: List[UploadFile] = File(...)):
+    if not files:
+        return {"error": "No files provided"}
+    
+    if not os.path.exists(images_dir):
+        os.makedirs(images_dir, exist_ok=True)
+        
+    saved_files = []
+    
+    for file in files:
+        if not file.filename:
+            continue
+            
+        ext = os.path.splitext(file.filename)[1]
+        unique_name = f"{uuid.uuid4().hex}{ext}"
+        
+        file_path = os.path.join(images_dir, unique_name)
+        
+        with open(file_path, "wb") as buffer:
+            while content := await file.read(1024 * 1024):
+                buffer.write(content)
+                
+        saved_files.append({
+            "original_filename": file.filename,
+            "saved_as": unique_name
+        })
+        
+    # Trigger embedding and re-clustering in background
+    background_tasks.add_task(process_uploaded_photos, saved_files)
+        
+    return {"message": "Successfully uploaded files, processing in background", "files": saved_files}
+
 @app.get("/photos/all")
-def list_all_photos():
+async def list_all_photos():
     """Returns a list of all approved photos in the images directory."""
     if not os.path.exists(images_dir):
         return []
@@ -125,7 +173,7 @@ def list_all_photos():
     return photos
 
 @app.get("/photos/pending")
-def list_pending_photos():
+async def list_pending_photos():
     """Returns a list of all photos in the pending directory."""
     if not os.path.exists(pending_dir):
         return []

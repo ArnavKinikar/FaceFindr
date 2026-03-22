@@ -106,7 +106,7 @@ const BulkUploadPage = () => {
     });
 
     const xhr = new XMLHttpRequest();
-    xhr.open('POST', 'http://localhost:8000/upload', true);
+    xhr.open('POST', 'http://localhost:8000/admin/upload', true);
 
     xhr.upload.onprogress = (event) => {
       if (event.lengthComputable) {

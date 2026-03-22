@@ -14,16 +14,39 @@ interface Photo {
 
 const AdminDashboard = () => {
   const [photos, setPhotos] = useState<Photo[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchPhotos = () => {
+    setLoading(true);
+    Promise.all([
+      fetch('http://localhost:8000/photos/all').then(res => res.json()),
+      fetch('http://localhost:8000/photos/pending').then(res => res.json())
+    ])
+      .then(([allData, pendingData]) => {
+        const allPhotos: Photo[] = (Array.isArray(allData) ? allData : []).map((filename: string, index: number) => ({
+          id: index,
+          title: filename,
+          alt: filename,
+          src: `http://localhost:8000/images/${filename}`,
+          pending: false
+        }));
+        
+        const pendingPhotos: Photo[] = (Array.isArray(pendingData) ? pendingData : []).map((filename: string, index: number) => ({
+          id: index + 1000000,
+          title: filename,
+          alt: filename,
+          src: `http://localhost:8000/pending-images/${filename}`,
+          pending: true
+        }));
+        
+        setPhotos([...pendingPhotos, ...allPhotos]);
+      })
+      .catch(err => console.error("Error fetching images:", err))
+      .finally(() => setLoading(false));
+  };
 
   useEffect(() => {
-    fetch('http://localhost:8000/images')
-      .then(res => res.json())
-      .then(data => {
-        if (data.images) {
-          setPhotos(data.images);
-        }
-      })
-      .catch(err => console.error("Error fetching images:", err));
+    fetchPhotos();
   }, []);
   return (
     <Box
@@ -44,7 +67,12 @@ const AdminDashboard = () => {
         <AlbumStats photos={photos} />
 
         {/* Managed Photo Grid (Uploads & Approvals) */}
-        <AdminPhotoGrid photos={photos} />
+        <AdminPhotoGrid 
+          photos={photos} 
+          setPhotos={setPhotos} 
+          loading={loading} 
+          onRefresh={fetchPhotos} 
+        />
 
         {/* Usage Policy/Footer Subtle Info */}
         <Box
