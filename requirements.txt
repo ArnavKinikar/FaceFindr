@@ -1,6 +1,6 @@
 # Face recognition & inference
 insightface==0.7.3
-onnxruntime>=1.16,<1.18
+onnxruntime
 
 # Core numeric / CV
 numpy>=1.24,<2.0

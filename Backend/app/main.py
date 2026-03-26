@@ -7,7 +7,7 @@ import uuid
 from typing import List
 
 app = FastAPI()
-
+project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # CORS
 origins = [
     "http://localhost:5173",
@@ -22,16 +22,23 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Resolve paths relative to the project root
-# current: .../Backend/app/main.py
-# project_root: .../
-current_dir = os.path.dirname(os.path.abspath(__file__))
-backend_dir = os.path.dirname(current_dir)
-project_root = os.path.dirname(backend_dir)
 
-images_dir = os.path.join(project_root, "images")
+# Allow override of images and data directories via environment variables
+images_dir = os.environ.get(
+    "IMAGES_DIR",
+    os.path.join(
+        os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
+        "images"
+    )
+)
+data_dir = os.environ.get(
+    "DATA_DIR",
+    os.path.join(
+        os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
+        "data"
+    )
+)
 pending_dir = os.path.join(images_dir, "pending")
-data_dir = os.path.join(project_root, "data")
 
 # Initialize Matcher
 matcher = FaceMatcher(data_dir=data_dir, images_dir=images_dir)
