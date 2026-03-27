@@ -1,17 +1,49 @@
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Box, Typography, TextField, Button, InputAdornment, Link as MuiLink } from '@mui/material';
 import MailOutlineIcon from '@mui/icons-material/MailOutline';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import AuthLayout from './AuthLayout';
+import { useState } from 'react';
+import axios from 'axios';
 
 const LoginPage = () => {
   const navigate = useNavigate();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Mock login successful
-    navigate('/admin/dashboard');
+    setError('');
+    
+    if (!email || !password) {
+      setError('Please fill in all fields.');
+      return;
+    }
+
+    setLoading(true);
+    console.log('Attempting login with:', { email });
+
+    try {
+      const response = await axios.post('http://localhost:8000/auth/login', {
+        email,
+        password
+      });
+
+      const { access_token } = response.data;
+      console.log('Login successful, token received');
+      localStorage.setItem('token', access_token);
+      
+      navigate('/admin/dashboard');
+    } catch (err: any) {
+      console.error('Login failed:', err);
+      const detail = err.response?.data?.detail;
+      setError(typeof detail === 'string' ? detail : 'Login failed. Please check your credentials.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -39,6 +71,9 @@ const LoginPage = () => {
             type="email"
             variant="outlined"
             size="medium"
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
@@ -54,6 +89,7 @@ const LoginPage = () => {
             }}
           />
         </Box>
+
 
         {/* Password Field */}
         <Box>
@@ -87,6 +123,9 @@ const LoginPage = () => {
             placeholder="••••••••"
             type="password"
             variant="outlined"
+            required
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
@@ -119,9 +158,16 @@ const LoginPage = () => {
             mt: 1,
             '&:active': { transform: 'scale(0.98)' },
           }}
+          disabled={loading}
         >
-          Sign In to Dashboard
+          {loading ? 'Signing In...' : 'Sign In to Dashboard'}
         </Button>
+
+        {error && (
+          <Typography variant="body2" color="error" sx={{ textAlign: 'center', mt: 1 }}>
+            {error}
+          </Typography>
+        )}
 
         {/* Footer Contextual Note */}
         <Box sx={{ mt: 2, pt: 3, borderTop: '1px solid', borderColor: 'divider' }}>

@@ -2,6 +2,12 @@ from fastapi import FastAPI, File, UploadFile, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from app.core.matcher import FaceMatcher
+from app.core.database import get_db
+from app.core.auth import verify_password, create_access_token, get_password_hash
+from app.core.models import User
+from sqlalchemy.orm import Session
+from fastapi import Depends, HTTPException, status
+from pydantic import BaseModel
 import os
 import uuid
 from typing import List
@@ -132,6 +138,54 @@ async def upload_image(file: UploadFile = File(...)):
     # `http://localhost:8000/images/{filename}`
     
     return results
+
+# Auth Schemas
+class LoginRequest(BaseModel):
+    email: str
+    password: str
+
+class SignupRequest(BaseModel):
+    email: str
+    password: str
+
+@app.post("/auth/signup")
+async def signup(request: SignupRequest, db: Session = Depends(get_db)):
+    # Check if user already exists
+    db_user = db.query(User).filter(User.email == request.email).first()
+    if db_user:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Email already registered"
+        )
+    
+    # Create new user
+    hashed_password = get_password_hash(request.password)
+    new_user = User(email=request.email, hashed_password=hashed_password)
+    
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
+    
+    return {"message": "User created successfully", "email": new_user.email}
+
+@app.post("/auth/login")
+async def login(request: LoginRequest, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.email == request.email).first()
+    if not user or not verify_password(request.password, user.hashed_password):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect email or password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    
+    access_token = create_access_token(data={"sub": user.email})
+    return {"access_token": access_token, "token_type": "bearer"}
+
+@app.get("/db-test")
+async def test_db_connection(db: Session = Depends(get_db)):
+    from sqlalchemy import text
+    result = db.execute(text("SELECT current_schema()")).fetchone()
+    return {"current_schema": result[0]}
 
 @app.post("/admin/upload")
 async def admin_upload(background_tasks: BackgroundTasks, files: List[UploadFile] = File(...)):

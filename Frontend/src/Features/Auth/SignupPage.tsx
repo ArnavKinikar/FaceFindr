@@ -1,19 +1,39 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Box, Typography, TextField, Button, InputAdornment, Link as MuiLink } from '@mui/material';
+import { Box, Typography, TextField, Button, InputAdornment, Link as MuiLink, Alert, Snackbar } from '@mui/material';
 import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
 import MailOutlineIcon from '@mui/icons-material/MailOutline';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import VerifiedUserOutlinedIcon from '@mui/icons-material/VerifiedUserOutlined';
 import AuthLayout from './AuthLayout';
+import { signup } from '../../Services/api';
 
 const SignupPage = () => {
   const navigate = useNavigate();
+  const [fullName, setFullName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
 
-  const handleSignup = (e: React.FormEvent) => {
+  const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Mock signup successful
-    navigate('/admin/dashboard');
+    setError(null);
+    setLoading(true);
+
+    try {
+      await signup(email, password);
+      setSuccess(true);
+      // Wait a bit before redirecting so user can see success message
+      setTimeout(() => {
+        navigate('/admin/dashboard');
+      }, 2000);
+    } catch (err: any) {
+      setError(err.message || 'An error occurred during signup');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -39,6 +59,8 @@ const SignupPage = () => {
             fullWidth
             placeholder="John Doe"
             variant="outlined"
+            value={fullName}
+            onChange={(e) => setFullName(e.target.value)}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
@@ -76,6 +98,9 @@ const SignupPage = () => {
             placeholder="name@company.com"
             type="email"
             variant="outlined"
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
@@ -113,6 +138,9 @@ const SignupPage = () => {
             placeholder="Create a password"
             type="password"
             variant="outlined"
+            required
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
@@ -130,11 +158,18 @@ const SignupPage = () => {
         </Box>
 
         {/* CTA Button */}
+        {error && (
+          <Alert severity="error" sx={{ mb: 2, borderRadius: 2 }}>
+            {error}
+          </Alert>
+        )}
+
         <Button
           fullWidth
           variant="contained"
           size="large"
           type="submit"
+          disabled={loading}
           sx={{
             py: 1.75,
             fontWeight: 700,
@@ -146,8 +181,19 @@ const SignupPage = () => {
             '&:active': { transform: 'scale(0.98)' },
           }}
         >
-          Create Account
+          {loading ? 'Creating Account...' : 'Create Account'}
         </Button>
+
+        <Snackbar 
+          open={success} 
+          autoHideDuration={6000} 
+          onClose={() => setSuccess(false)}
+          anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        >
+          <Alert severity="success" sx={{ width: '100%', borderRadius: 2 }}>
+            Account created successfully! Redirecting...
+          </Alert>
+        </Snackbar>
 
         {/* Footer Contextual Note */}
         <Box sx={{ mt: 2, pt: 3, borderTop: '1px solid', borderColor: 'divider' }}>

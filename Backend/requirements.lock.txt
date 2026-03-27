@@ -57,3 +57,9 @@ typing_extensions==4.15.0
 urllib3==2.6.3
 uvicorn==0.42.0
 wcwidth==0.6.0
+sqlalchemy==2.0.25
+psycopg2-binary==2.9.9
+passlib[bcrypt]==1.7.4
+bcrypt==3.2.0
+python-jose[cryptography]==3.3.0
+email-validator==2.1.0.post1

@@ -63,3 +63,26 @@ export const fetchAllPhotos = async (): Promise<Photo[]> => {
     // If empty, maybe the user hasn't uploaded yet. 
     return stored ? JSON.parse(stored) : [];
 };
+
+export const signup = async (email: string, password: string): Promise<any> => {
+    try {
+        const response = await fetch(`${API_BASE_URL}/auth/signup`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ email, password }),
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.detail || `Signup failed: ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        return { success: true, message: data.message };
+    } catch (error: any) {
+        console.error('Error during signup:', error);
+        throw error;
+    }
+};
