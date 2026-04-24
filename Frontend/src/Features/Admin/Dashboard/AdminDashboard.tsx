@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import { Box, Container, Typography, Stack, Link as MuiLink } from '@mui/material';
 import AlbumHero from './Components/AlbumHero';
 import AlbumStats from './Components/AlbumStats';
@@ -13,14 +14,37 @@ interface Photo {
 }
 
 const AdminDashboard = () => {
+  const { albumId } = useParams();
+  const [album, setAlbum] = useState<any>(null);
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const fetchAlbumDetails = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`http://localhost:8000/admin/albums/${albumId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setAlbum(data);
+      }
+    } catch (err) {
+      console.error("Error fetching album details:", err);
+    }
+  };
+
   const fetchPhotos = () => {
     setLoading(true);
+    const token = localStorage.getItem('token');
+    const headers = { Authorization: `Bearer ${token}` };
+    
+    // In a real app, the backend would filter by albumId. 
+    // For now, we fetch all and can filter locally or update backend.
+    
     Promise.all([
-      fetch('http://localhost:8000/photos/all').then(res => res.json()),
-      fetch('http://localhost:8000/photos/pending').then(res => res.json())
+      fetch('http://localhost:8000/photos/all', { headers }).then(res => res.json()),
+      fetch('http://localhost:8000/photos/pending', { headers }).then(res => res.json())
     ])
       .then(([allData, pendingData]) => {
         const allPhotos: Photo[] = (Array.isArray(allData) ? allData : []).map((filename: string, index: number) => ({
@@ -46,8 +70,9 @@ const AdminDashboard = () => {
   };
 
   useEffect(() => {
+    fetchAlbumDetails();
     fetchPhotos();
-  }, []);
+  }, [albumId]);
   return (
     <Box
       sx={{
@@ -61,7 +86,7 @@ const AdminDashboard = () => {
       {/* Main Content Area */}
       <Container maxWidth="xl" component="main" sx={{ pt: 4, pb: 8 }}>
         {/* Page Header Section (Hero) */}
-        <AlbumHero />
+        <AlbumHero album={album} />
 
         {/* Stats Row */}
         <AlbumStats photos={photos} />

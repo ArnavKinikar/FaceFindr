@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { Box, Container, Typography, Button, Breadcrumbs, Link as MuiLink, Stack } from '@mui/material';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import VisibilityIcon from '@mui/icons-material/Visibility';
@@ -7,6 +7,7 @@ import SettingsSections from './Components/SettingsSections';
 
 const SettingsPage = () => {
     const navigate = useNavigate();
+    const { albumId } = useParams();
 
     return (
         <Box
@@ -28,7 +29,7 @@ const SettingsPage = () => {
                         >
                             <MuiLink
                                 component="button"
-                                onClick={() => navigate('/admin/dashboard')}
+                                onClick={() => navigate(`/admin/dashboard/${albumId}`)}
                                 color="inherit"
                                 sx={{ textDecoration: 'none', '&:hover': { color: 'primary.main' } }}
                             >
@@ -81,7 +82,7 @@ const SettingsPage = () => {
                         }}
                     >
                         <Button
-                            onClick={() => navigate('/admin/dashboard')}
+                            onClick={() => navigate(`/admin/dashboard/${albumId}`)}
                             sx={{ color: 'text.secondary', fontWeight: 700, px: 3 }}
                         >
                             Discard changes

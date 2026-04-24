@@ -20,6 +20,12 @@ const UnifiedHeader = ({ variant }: UnifiedHeaderProps) => {
         location.pathname.startsWith('/auth') ? 'auth' : 'home'
     );
 
+    // Extract albumId from path if in dashboard or settings
+    const pathParts = location.pathname.split('/');
+    const albumIdFromPath = (location.pathname.includes('/dashboard/') || location.pathname.includes('/settings/')) 
+        ? pathParts[pathParts.length - 1] 
+        : null;
+
     if (activeVariant === 'auth') return null; // Auth pages usually have centered logo
 
     return (
@@ -45,7 +51,7 @@ const UnifiedHeader = ({ variant }: UnifiedHeaderProps) => {
                             cursor: 'pointer',
                             '&:hover .logo-bg': { transform: 'scale(1.1)' }
                         }}
-                        onClick={() => navigate(activeVariant === 'admin' ? '/admin/dashboard' : '/')}
+                        onClick={() => navigate(activeVariant === 'admin' ? '/admin/albums' : '/')}
                     >
                         <Box 
                             className="logo-bg"
@@ -112,21 +118,29 @@ const UnifiedHeader = ({ variant }: UnifiedHeaderProps) => {
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
                                 <Box sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center', gap: 3 }}>
                                     <Button 
-                                        onClick={() => navigate('/admin/dashboard')}
+                                        onClick={() => navigate('/admin/albums')}
                                         sx={{ 
-                                            fontWeight: location.pathname === '/admin/dashboard' ? 700 : 500, 
-                                            color: location.pathname === '/admin/dashboard' ? 'primary.main' : 'text.secondary',
-                                            '&:hover': { color: location.pathname === '/admin/dashboard' ? 'primary.main' : 'text.primary' }
+                                            fontWeight: location.pathname === '/admin/albums' ? 700 : 500, 
+                                            color: location.pathname === '/admin/albums' ? 'primary.main' : 'text.secondary',
+                                            '&:hover': { color: location.pathname === '/admin/albums' ? 'primary.main' : 'text.primary' }
                                         }}
                                     >
                                         Albums
                                     </Button>
                                     <Button 
-                                        onClick={() => navigate('/admin/settings')}
+                                        onClick={() => {
+                                            if (albumIdFromPath) {
+                                                navigate(`/admin/settings/${albumIdFromPath}`);
+                                            } else {
+                                                // If no album context, maybe just go to a general settings or stay put
+                                                // For now, if we are in admin but not in an album, we shouldn't really see "Settings" or it should be general
+                                                navigate('/admin/profile'); 
+                                            }
+                                        }}
                                         sx={{ 
-                                            fontWeight: location.pathname === '/admin/settings' ? 700 : 500, 
-                                            color: location.pathname === '/admin/settings' ? 'primary.main' : 'text.secondary',
-                                            '&:hover': { color: location.pathname === '/admin/settings' ? 'primary.main' : 'text.primary' }
+                                            fontWeight: location.pathname.includes('/admin/settings') ? 700 : 500, 
+                                            color: location.pathname.includes('/admin/settings') ? 'primary.main' : 'text.secondary',
+                                            '&:hover': { color: location.pathname.includes('/admin/settings') ? 'primary.main' : 'text.primary' }
                                         }}
                                     >
                                         Settings

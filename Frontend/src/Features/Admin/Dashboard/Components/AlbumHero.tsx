@@ -4,15 +4,31 @@ import LocationOnIcon from '@mui/icons-material/LocationOn';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import CheckIcon from '@mui/icons-material/Check';
 
-const AlbumHero = () => {
+interface AlbumHeroProps {
+  album: {
+    title: string;
+    event_name?: string;
+    location?: string;
+    access_code?: string;
+  } | null;
+}
+
+const AlbumHero = ({ album }: AlbumHeroProps) => {
   const [copied, setCopied] = useState(false);
-  const albumUrl = "https://visionary.events/p/smith-wedding-24";
+  
+  // Construct a public URL using the access code if available
+  // For now, using a placeholder logic that can be updated later
+  const albumUrl = album?.access_code 
+    ? `http://localhost:5173/gallery/${album.access_code}` 
+    : "http://localhost:5173/gallery/...";
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(albumUrl);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
+
+  if (!album) return null;
 
   return (
     <Box
@@ -35,9 +51,10 @@ const AlbumHero = () => {
             letterSpacing: '-0.02em',
             color: 'text.primary',
             mb: 1,
+            textTransform: 'uppercase',
           }}
         >
-          The Smith Wedding
+          {album.title}
         </Typography>
         <Typography
           variant="h6"
@@ -50,7 +67,7 @@ const AlbumHero = () => {
           }}
         >
           <LocationOnIcon color="primary" sx={{ fontSize: 24 }} />
-          Sunset Ridge Estate, Napa Valley
+          {album.event_name || 'Event'} {album.location ? `• ${album.location}` : ''}
         </Typography>
       </Box>
 

@@ -27,7 +27,7 @@ const SignupPage = () => {
       setSuccess(true);
       // Wait a bit before redirecting so user can see success message
       setTimeout(() => {
-        navigate('/admin/dashboard');
+        navigate('/admin/albums');
       }, 2000);
     } catch (err: any) {
       setError(err.message || 'An error occurred during signup');

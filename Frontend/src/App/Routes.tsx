@@ -3,6 +3,7 @@ import HomePage from "../Features/Home/HomePage";
 import LoginPage from "../Features/Auth/LoginPage";
 import SignupPage from "../Features/Auth/SignupPage";
 import AdminDashboard from "../Features/Admin/Dashboard/AdminDashboard";
+import AlbumsPage from "../Features/Admin/Albums/AlbumsPage";
 import ProfilePage from "../Features/Admin/Profile/ProfilePage";
 import SettingsPage from "../Features/Admin/Settings/SettingsPage";
 import BulkUploadPage from "../Features/Admin/Upload/BulkUploadPage";
@@ -24,9 +25,10 @@ function AppRoutes() {
             <Route path="/auth/signup" element={<SignupPage />} />
 
             {/* Admin Flow */}
-            <Route path="/admin/dashboard" element={<AdminDashboard />} />
+            <Route path="/admin/albums" element={<AlbumsPage />} />
+            <Route path="/admin/dashboard/:albumId" element={<AdminDashboard />} />
             <Route path="/admin/profile" element={<ProfilePage />} />
-            <Route path="/admin/settings" element={<SettingsPage />} />
+            <Route path="/admin/settings/:albumId" element={<SettingsPage />} />
             <Route path="/admin/upload" element={<BulkUploadPage />} />
 
             {/* Guest Flow */}

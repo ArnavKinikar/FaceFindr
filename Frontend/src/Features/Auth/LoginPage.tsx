@@ -36,7 +36,7 @@ const LoginPage = () => {
       console.log('Login successful, token received');
       localStorage.setItem('token', access_token);
       
-      navigate('/admin/dashboard');
+      navigate('/admin/albums');
     } catch (err: any) {
       console.error('Login failed:', err);
       const detail = err.response?.data?.detail;
